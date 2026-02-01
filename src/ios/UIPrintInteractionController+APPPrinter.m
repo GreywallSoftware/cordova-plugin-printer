@@ -18,53 +18,43 @@
  specific language governing permissions and limitations
  under the License.
  */
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import "UIPrintInteractionController+APPPrinter.h"
+#import "APPPrinterInfo.h"
+#import <objc/runtime.h>
 
-#include "APPPrinterInfo.h"
-#include "UIPrintInteractionController+APPPrinter.h"
-
-#include <objc/runtime.h>
+static char SETTINGS_KEY;
 
 @implementation UIPrintInteractionController (APPPrinter)
 
-static char UIP_SETTINGS_KEY;
-
 @dynamic settings;
 
-#pragma mark -
-#pragma mark Init
-
-+ (instancetype) sharedPrintControllerWithSettings:(NSDictionary *)settings
++ (instancetype)sharedPrintControllerWithSettings:(NSDictionary *)settings
 {
-    NSDictionary* ui = settings[@"ui"];
+    UIPrintInteractionController *ctrl =
+        [UIPrintInteractionController sharedPrintController];
 
-    UIPrintInteractionController* ctrl =
-    UIPrintInteractionController.sharedPrintController;
-
-    ctrl.printInfo = [APPPrinterInfo
-                      printInfoWithDictionary:settings];
-
+    ctrl.printInfo = [APPPrinterInfo printInfoWithDictionary:settings];
     ctrl.settings  = settings;
-
-    if (ui)
-    {
-        ctrl.showsNumberOfCopies = ![ui[@"hideNumberOfCopies"] boolValue];
-        ctrl.showsPaperSelectionForLoadedPapers = ![ui[@"hidePaperFormat"] boolValue];
-    }
 
     return ctrl;
 }
 
-#pragma mark -
-#pragma mark Private
-
-- (void) setSettings:(NSDictionary *)settings
+- (void)setSettings:(NSDictionary *)settings
 {
-    objc_setAssociatedObject(self, &UIP_SETTINGS_KEY, settings, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(
+        self,
+        &SETTINGS_KEY,
+        settings,
+        OBJC_ASSOCIATION_RETAIN_NONATOMIC
+    );
 }
 
 - (NSDictionary *)settings
 {
-    return objc_getAssociatedObject(self, &UIP_SETTINGS_KEY);
+    return objc_getAssociatedObject(self, &SETTINGS_KEY);
 }
 
 @end
+
