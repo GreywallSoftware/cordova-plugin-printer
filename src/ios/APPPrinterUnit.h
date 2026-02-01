@@ -18,7 +18,7 @@
  specific language governing permissions and limitations
  under the License.
  */
-
+@import Foundation;
 @interface APPPrinterUnit : NSObject
 
 + (double) convert:(nullable id)unit;
